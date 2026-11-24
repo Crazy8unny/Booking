@@ -442,6 +442,22 @@ def main() -> int:
 
                 js_click(page, "#login_button")
 
+                log(f"Current URL: {page.url}")
+                log(f"Page title: {page.title()}")
+
+                log(f"Login button count: {page.locator('#login_button').count()}")
+                log(f"Login form count: {page.locator('#login_form').count()}")
+
+                page.wait_for_timeout(3000)
+
+                log("Page content after login click:")
+                log(page.locator("body").inner_text()[:3000])
+
+                page.screenshot(
+                    path="debug-login.png",
+                    full_page=True
+                )
+
                 page.wait_for_selector(
                     "#login_form",
                     timeout=10_000
@@ -620,8 +636,14 @@ def main() -> int:
 
     try:
 
-        tg_send(message)
-
+        if error_msg:
+            tg_send(
+                "🔴 <b>ספריית אלקנה — שגיאה!</b>\n"
+                f"<code>{html.escape(error_msg)}</code>"
+            )
+        else:
+            tg_send(build_message(after, failed))
+            
         for ln in message.splitlines():
             log("| " + ln)
 
