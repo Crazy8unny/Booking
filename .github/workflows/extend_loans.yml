@@ -1,0 +1,47 @@
+
+name: Daily Library Loan Extension
+
+on:
+  schedule:
+    # Every day at 07:17 Israel time
+    - cron: "50 12 * * *"
+      timezone: "Asia/Jerusalem"
+
+  # Allows manual execution from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run-library-script:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      READER_URL: ${{ vars.READER_URL }}
+      LOANS_URL: ${{ vars.LOANS_URL }}
+
+      LIBRARY_USERNAME: ${{ secrets.LIBRARY_USERNAME }}
+      LIBRARY_PASSWORD: ${{ secrets.LIBRARY_PASSWORD }}
+
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Run library script
+        run: python main.py
