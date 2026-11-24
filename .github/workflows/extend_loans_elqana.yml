@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    # Load configuration from GitHub Environment
+    environment: Elqana
+
     env:
       READER_URL: ${{ vars.READER_URL }}
       LOANS_URL: ${{ vars.LOANS_URL }}
@@ -44,4 +47,4 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Run library script
-        run: python main.py
+        run: python extend_loans.py
